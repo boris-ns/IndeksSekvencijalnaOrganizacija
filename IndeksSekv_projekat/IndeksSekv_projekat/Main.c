@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include "RadSaDatotekom.h"
+#include "RadSaSerijskomDat.h"
 
 void IspisiMeni()
 {
 	printf("1) Formiranje prazne datoteke\n");
 	printf("2) Izobr aktivne datoteke\n");
 	printf("3) Prikaz naziva aktivne datoteke\n");
+	printf("4) Formiranje serijske datoteke sa unosom podataka\n");
 	printf("Odaberite: ");
 }
 
@@ -42,6 +44,10 @@ void RukovanjeMenijem()
 
 		case 3:
 			PrikaziNazivAktivneDatoteke(nazivDatoteke);
+			break;
+
+		case 4:
+			FormirajSerijskuBlokiranuDat(nazivDatoteke);
 			break;
 
 		case 13: // Izlaz iz programa
