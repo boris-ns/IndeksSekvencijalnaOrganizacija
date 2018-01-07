@@ -9,15 +9,7 @@ void FormirajSekvencijalnuDatoteku(const char* nazivSerijskeDat)
 		return;
 	}
 
-	FILE* sekvDat = fopen("sekvencijalna.dat", "wb");
-	if (sekvDat == NULL)
-	{
-		printf("\nDoslo je do greske prilikom kreiranja sekvencijalne datoteke!\n");
-		return;
-	}
-
-	Cvor glavaListe;
-	glavaListe.sledeci = NULL;
+	Cvor* glavaListe = NULL;
 	BlokSerijska blok;
 
 	fseek(serijskaDat, 0, SEEK_SET);
@@ -31,14 +23,34 @@ void FormirajSekvencijalnuDatoteku(const char* nazivSerijskeDat)
 		}
 	}
 
-	SortirajListu(&glavaListe);
-	UpisiElementeListeUSekvDat(&glavaListe);
-
-	fclose(sekvDat);
 	fclose(serijskaDat);
+	
+	UpisiElementeListeUSekvDat(glavaListe);
+	OslobodiMemoriju(&glavaListe);
+
+	printf("\nSekvencijalna datoteka je uspesno formirana.\n");
 }
 
 void UpisiElementeListeUSekvDat(Cvor* glavaListe)
 {
+	Cvor* tempGlava = glavaListe;
+	
+	FILE* sekvDat = fopen("sekvencijalna.dat", "wb");
+	if (sekvDat == NULL)
+	{
+		printf("\nDoslo je do greske prilikom kreiranja sekvencijalne datoteke!\n");
+		return;
+	}
 
+	while (tempGlava != NULL)
+	{
+		fwrite(&tempGlava->slog, sizeof(Slog), 1, sekvDat);
+		tempGlava = tempGlava->sledeci;
+	}
+
+	Slog poslednjiSlog;
+	poslednjiSlog.status = STATUS_POSLEDNJI;
+	fwrite(&poslednjiSlog, sizeof(Slog), 1, sekvDat);
+
+	fclose(sekvDat);
 }
