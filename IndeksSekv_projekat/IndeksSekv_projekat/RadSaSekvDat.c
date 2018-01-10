@@ -42,15 +42,30 @@ void UpisiElementeListeUSekvDat(Cvor* glavaListe)
 		return;
 	}
 
+	Slog blok[FAKTOR_BLOKIRANJA_SEKV];
+	int i = 0;
+
 	while (tempGlava != NULL)
 	{
-		fwrite(&tempGlava->slog, sizeof(Slog), 1, sekvDat);
+		blok[i++] = tempGlava->slog;
+
+		if (i == FAKTOR_BLOKIRANJA_SEKV)
+		{
+			i = 0;
+			fwrite(&blok, FAKTOR_BLOKIRANJA_SEKV * sizeof(Slog), 1, sekvDat);
+		}
+
 		tempGlava = tempGlava->sledeci;
 	}
 
-	Slog poslednjiSlog;
-	poslednjiSlog.status = STATUS_POSLEDNJI;
-	fwrite(&poslednjiSlog, sizeof(Slog), 1, sekvDat);
+	for (; i < FAKTOR_BLOKIRANJA_SEKV; ++i)
+	{
+		Slog randomSlog;
+		randomSlog.status = STATUS_POSLEDNJI;
+		blok[i] = randomSlog;
+	}
+
+	fwrite(&blok, FAKTOR_BLOKIRANJA_SEKV * sizeof(Slog), 1, sekvDat);
 
 	fclose(sekvDat);
 }
