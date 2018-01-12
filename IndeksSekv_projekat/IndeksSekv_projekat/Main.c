@@ -2,6 +2,7 @@
 #include "RadSaDatotekom.h"
 #include "RadSaSerijskomDat.h"
 #include "RadSaSekvDat.h"
+#include "RadSaPrimarnomZonom.h"
 
 void IspisiMeni()
 {
@@ -10,6 +11,7 @@ void IspisiMeni()
 	printf("3) Prikaz naziva aktivne datoteke\n");
 	printf("4) Formiranje serijske datoteke sa unosom podataka\n");
 	printf("5) Formiraj sekvencijalnu datoteku na osnovu serijske\n");
+	printf("6) Formiraj primarnu zonu i zonu indeksa\n");
 	printf("Odaberite: ");
 }
 
@@ -54,6 +56,10 @@ void RukovanjeMenijem()
 
 		case 5:
 			FormirajSekvencijalnuDatoteku(nazivDatoteke);
+			break;
+
+		case 6:
+			FormirajIndeksSekvencijalnuDat();
 			break;
 
 		case 13: // Izlaz iz programa
