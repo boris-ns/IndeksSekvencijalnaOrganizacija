@@ -5,5 +5,6 @@
 
 void FormirajPraznuDatoteku();
 FILE* IzaberiAktivnuDatoteku(const char* nazivDatoteke);
+int ProveriDaLiDatotekaPostoji(const char* nazivDatoteke);
 
 #endif //_RAD_SA_DATOTEKOM_H_

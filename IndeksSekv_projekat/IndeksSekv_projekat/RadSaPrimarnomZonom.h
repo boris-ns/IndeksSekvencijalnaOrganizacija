@@ -8,6 +8,8 @@
 #include "BlokPrimarneZone.h"
 #include "RadSaSekvDat.h"
 #include "CvorStabla.h"
+#include "SlogPrekoracioc.h"
+#include "RadSaDatotekom.h"
 
 void FormirajIndeksSekvencijalnuDat();
 void PripremiBlokZaUpisUPrimZonu(FILE* datPrimarnaZona, BlokPrimarneZone* blokPz, Slog blokSekv[]);
@@ -19,5 +21,6 @@ int IzracunajVisinuStabla(int brojBlokova);
 int IzracunajBrojCvorovaNaNivou(int brojBlokova, int visinaStabla, int nivo);
 void PostaviVrednostKljuca(CvorStabla* cvor, CvorStabla* cvorIzDat, int pozicija);
 void IspisiSveSlogove();
+void IspisiSlogoveIzZonePrekoracenja(long adresaPrvogPrek, long adresaBlokaPz);
 
 #endif //_RAD_SA_PRIMARNOM_ZONOM_H_

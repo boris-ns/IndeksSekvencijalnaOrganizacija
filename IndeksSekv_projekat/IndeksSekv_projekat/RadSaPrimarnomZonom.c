@@ -1,11 +1,17 @@
 #include "RadSaPrimarnomZonom.h"
 
-// @TODO TESTIRATI
 void FormirajIndeksSekvencijalnuDat()
 {
+	if (!ProveriDaLiDatotekaPostoji("sekvencijalna.dat"))
+	{
+		printf("\nSekvencijalna datoteka nije formirana!\n");
+		return;
+	}
+
 	FILE* sekvDat = fopen("sekvencijalna.dat", "rb");
 	FILE* primZona = fopen("primarna_zona.dat", "wb");
 	FILE* zonaInd = fopen("zona_indeksa.dat", "w+b");
+	FILE* prekoracioci = fopen("prekoracioci.dat", "wb");
 
 	BlokPrimarneZone blokPz;
 	Slog blokSekv[FAKTOR_BLOKIRANJA_SEKV];
@@ -42,6 +48,7 @@ void FormirajIndeksSekvencijalnuDat()
 	// Poslednji slog u poslednjem listu treba da ima max vrednost kljuca
 	PodesiPoslednjiList(zonaInd); // TODO mozda ovo i ne treba jer sam u trazenju maxa stavio da ako je slog satus_poslednji da stavi max vrednost "zzzzzz"
 
+	fclose(prekoracioci);
 	fclose(zonaInd);
 	fclose(primZona);
 	fclose(sekvDat);
@@ -186,6 +193,9 @@ void IspisiSveSlogove()
 	while (fread(&blok, sizeof(BlokPrimarneZone), 1, primZona))
 	{
 		int i = 0;
+		long adresaBloka = 0;
+
+		// Ispis bloka primarne zone
 		for (; i < FAKTOR_BLOKIRANJA_PRIM_ZONA; ++i)
 		{
 			if (blok.slogovi[i].status == STATUS_POSLEDNJI) // Prestani sa ispisom kad dodjes do kraja datoteke
@@ -195,22 +205,47 @@ void IspisiSveSlogove()
 			{
 				IspisiSlog(&blok.slogovi[i]);
 				printf("\tRedni broj sloga u bloku: %d\n", i + 1);
-				printf("\tAdresa bloka u primarnoj zoni: %ld\n", brojacBlokova * sizeof(BlokPrimarneZone));
+				adresaBloka = brojacBlokova * sizeof(BlokPrimarneZone);
+				printf("\tAdresa bloka u primarnoj zoni: %ld\n", adresaBloka);
 			}
 		}
 
+		// Ispis prekoracilaca ako postoje
 		if (blok.prviZonaPr == NEMA_PREKORACILACA)
-		{
 			printf("\t---Blok %u nema prekoracilaca!\n", brojacBlokova + 1);
-		}	
 		else
-		{
-			// Prodji kroz fajl sa prekoraciocima i ispisi ih sve
-			// Bolje ovo stavi u posebnu funkciju i skolini zagrade iz ovog if-elsa, lepse ce biti
-			FILE* prekoraciociDat = fopen("prekoracioci.dat", "rb");
-			// ...
-		}
+			IspisiSlogoveIzZonePrekoracenja(blok.prviZonaPr, adresaBloka);
 
 		++brojacBlokova;
 	}
+}
+
+
+// @TODO TESTIRATI OVO
+//									      adresaPrvogPrekoracioca
+void IspisiSlogoveIzZonePrekoracenja(long adresaPrvogPrek, long adresaBlokaPz)
+{
+	FILE* prekoraciociDat = fopen("prekoracioci.dat", "rb");
+	SlogPrekoracioc slog;
+	int brojacSlogova = 1;
+
+	fseek(prekoraciociDat, adresaPrvogPrek, SEEK_SET);
+	while (fread(&slog, sizeof(SlogPrekoracioc), 1, prekoraciociDat))
+	{
+		if (slog.slog.status == STATUS_AKTIVAN)
+		{
+			IspisiSlog(&slog.slog);
+			printf("\tRedni broj sloga u listi prekoracilaca: %d\n", brojacSlogova);
+			printf("\tAdresa bloka u primarnoj zoni: %ld\n", adresaBlokaPz);
+
+			++brojacSlogova;
+		}
+
+		fseek(prekoraciociDat, slog.sledeci, SEEK_SET);
+
+		if (slog.sledeci == NEMA_PREKORACILACA)
+			break;
+	}
+
+	fclose(prekoraciociDat);
 }

@@ -31,3 +31,12 @@ FILE* IzaberiAktivnuDatoteku(const char* nazivDatoteke)
 
 	return datoteka;
 }
+
+int ProveriDaLiDatotekaPostoji(const char* nazivDatoteke)
+{
+	FILE* datoteka = fopen(nazivDatoteke, "rb");
+	int postojanje = (datoteka == NULL) ? 0 : 1;
+	fclose(datoteka);
+
+	return postojanje;
+}
