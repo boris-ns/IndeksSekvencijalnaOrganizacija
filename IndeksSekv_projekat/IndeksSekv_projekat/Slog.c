@@ -7,7 +7,6 @@ void UnesiSlog(Slog* slog)
 	printf("Unesite ime i prezime: ");
 	scanf("%s", &slog->kredit.imePrezime);
 	printf("Unesite datum i vreme: ");
-	fflush(stdin);
 	scanf("%s", &slog->kredit.datumVreme);
 
 	do

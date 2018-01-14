@@ -113,20 +113,28 @@ void FormirajOstatakStabla(int brojBlokova)
 	fseek(zonaInd, 0, SEEK_SET);
 
 	int visinaStabla = IzracunajVisinuStabla(brojBlokova);
+	int visinaStabla_copy = visinaStabla;
 
-	while (visinaStabla-- != 0)
+	// While koji prolazi kroz sve nivoe stabla osim poslednjeg (listovi)
+	while (visinaStabla-- != 1) // 1 jer je poslednji nivo vec kreiran
 	{
-		int potrebanBrCvorova = IzracunajBrojCvorovaNaNivou(brojBlokova, visinaStabla, visinaStabla);  // Koliko cvorova treba kreirati
-		int brCvorovaNaPrethodnojVisini = IzracunajBrojCvorovaNaNivou(brojBlokova, visinaStabla, visinaStabla + 1); // Koliko cvorova treba procitati iz datoteke
+		int potrebanBrCvorova = IzracunajBrojCvorovaNaNivou(brojBlokova, visinaStabla_copy, visinaStabla);  // Koliko cvorova treba kreirati
+		int brCvPrethodniNivo = IzracunajBrojCvorovaNaNivou(brojBlokova, visinaStabla_copy, visinaStabla + 1); // Koliko cvorova treba procitati iz datoteke
 
-		while (potrebanBrCvorova-- != 0)
+		//fseek(zonaInd, brCvPrethodniNivo * sizeof(CvorStabla), SEEK_SET); // mozda i ne treba ovo ?
+		// While koji kreira sve cvorove na trenutnom nivou
+		while (potrebanBrCvorova-- != 0) 
 		{
 			CvorStabla cvor, cvorIzDat;
 			InitCvorStabla(&cvor);
 			int i = 0;
 
-			while (i++ != 3 && brCvorovaNaPrethodnojVisini-- != 0 && fread(&cvorIzDat, sizeof(CvorStabla), 1, zonaInd))
+			// Citanje 3 cvora (FAKTOR_BLOK_STABLA) ako je to moguce i smestanje kljuceva na odgovarajuce mesto
+			while (i != FAKTOR_BLOKIRANJA_STABLA && brCvPrethodniNivo-- != 0 && fread(&cvorIzDat, sizeof(CvorStabla), 1, zonaInd))
+			{
 				PostaviVrednostKljuca(&cvor, &cvorIzDat, i);
+				cvor.slogovi[i++].relAdr = ftell(zonaInd) - sizeof(CvorStabla); // Adresa cvora ispod, sluzice za brzu navigaciju kroz fajl
+			}
 			
 			// Upis novog cvora na kraj datoteke i vracanje tekuceg pokazivaca na mesto gde smo stali sa citanjem cvorova
 			long pozicijaZaCitanje = ftell(zonaInd);
@@ -156,15 +164,15 @@ void PostaviVrednostKljuca(CvorStabla* cvor, CvorStabla* cvorIzDat, int pozicija
 {
 	int maxIndex = 0;
 	
-	int i = 1;
+	int i = 0;
 	for (; i < FAKTOR_BLOKIRANJA_STABLA; ++i)
 	{
-		if (cvorIzDat->slogovi[i].status != STATUS_PRAZAN_SLOG)
+		if (cvorIzDat->slogovi[i].status == STATUS_PRAZAN_SLOG)
 			break;
 		
-		if (strcmp(cvorIzDat->slogovi[i].evidencioniBroj, cvorIzDat->slogovi[maxIndex].evidencioniBroj) > 0)
+		if (strcmp(cvorIzDat->slogovi[i].evidencioniBroj, cvorIzDat->slogovi[maxIndex].evidencioniBroj) >= 0)
 			maxIndex = i;
 	}
 
-	memcpy(&cvor->slogovi[pozicija], &cvorIzDat->slogovi[maxIndex], sizeof(CvorStabla));
+	memcpy(&cvor->slogovi[pozicija], &cvorIzDat->slogovi[maxIndex], sizeof(SlogStabla));
 }
