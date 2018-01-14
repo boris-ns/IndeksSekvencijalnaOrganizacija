@@ -18,5 +18,6 @@ void FormirajOstatakStabla(int brojBlokova);
 int IzracunajVisinuStabla(int brojBlokova);
 int IzracunajBrojCvorovaNaNivou(int brojBlokova, int visinaStabla, int nivo);
 void PostaviVrednostKljuca(CvorStabla* cvor, CvorStabla* cvorIzDat, int pozicija);
+void IspisiSveSlogove();
 
 #endif //_RAD_SA_PRIMARNOM_ZONOM_H_

@@ -176,3 +176,41 @@ void PostaviVrednostKljuca(CvorStabla* cvor, CvorStabla* cvorIzDat, int pozicija
 
 	memcpy(&cvor->slogovi[pozicija], &cvorIzDat->slogovi[maxIndex], sizeof(SlogStabla));
 }
+
+void IspisiSveSlogove()
+{
+	FILE* primZona = fopen("primarna_zona.dat", "rb");
+	BlokPrimarneZone blok;
+	unsigned int brojacBlokova = 0; // Sluzi za ispis adrese bloka u datoteci primarne zone
+
+	while (fread(&blok, sizeof(BlokPrimarneZone), 1, primZona))
+	{
+		int i = 0;
+		for (; i < FAKTOR_BLOKIRANJA_PRIM_ZONA; ++i)
+		{
+			if (blok.slogovi[i].status == STATUS_POSLEDNJI) // Prestani sa ispisom kad dodjes do kraja datoteke
+				break;
+
+			if (blok.slogovi[i].status == STATUS_AKTIVAN)
+			{
+				IspisiSlog(&blok.slogovi[i]);
+				printf("\tRedni broj sloga u bloku: %d\n", i + 1);
+				printf("\tAdresa bloka u primarnoj zoni: %ld\n", brojacBlokova * sizeof(BlokPrimarneZone));
+			}
+		}
+
+		if (blok.prviZonaPr == NEMA_PREKORACILACA)
+		{
+			printf("\t---Blok %u nema prekoracilaca!\n", brojacBlokova + 1);
+		}	
+		else
+		{
+			// Prodji kroz fajl sa prekoraciocima i ispisi ih sve
+			// Bolje ovo stavi u posebnu funkciju i skolini zagrade iz ovog if-elsa, lepse ce biti
+			FILE* prekoraciociDat = fopen("prekoracioci.dat", "rb");
+			// ...
+		}
+
+		++brojacBlokova;
+	}
+}

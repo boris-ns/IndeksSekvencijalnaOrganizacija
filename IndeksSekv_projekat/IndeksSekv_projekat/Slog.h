@@ -16,5 +16,6 @@ typedef struct
 
 
 void UnesiSlog(Slog* slog);
+void IspisiSlog(Slog* slog);
 
 #endif //_SLOG_H_

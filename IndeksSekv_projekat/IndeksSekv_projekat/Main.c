@@ -12,6 +12,9 @@ void IspisiMeni()
 	printf("4) Formiranje serijske datoteke sa unosom podataka\n");
 	printf("5) Formiraj sekvencijalnu datoteku na osnovu serijske\n");
 	printf("6) Formiraj primarnu zonu i zonu indeksa\n");
+	// ... ostalo sto fali
+	printf("12) Ispisi sve slogove\n");
+	printf("13) Izlaz iz programa\n");
 	printf("Odaberite: ");
 }
 
@@ -60,6 +63,10 @@ void RukovanjeMenijem()
 
 		case 6:
 			FormirajIndeksSekvencijalnuDat();
+			break;
+
+		case 12:
+			IspisiSveSlogove();
 			break;
 
 		case 13: // Izlaz iz programa

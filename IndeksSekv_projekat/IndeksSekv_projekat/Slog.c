@@ -29,3 +29,13 @@ void UnesiSlog(Slog* slog)
 
 	slog->status = STATUS_AKTIVAN;
 }
+
+void IspisiSlog(Slog* slog)
+{
+	printf("\n\tEvidencioni broj: %s\n", slog->kredit.evidencioniBroj);
+	printf("\tIme i prezime: %s\n", slog->kredit.imePrezime);
+	printf("\tDatum i vreme odobrenja: %s\n", slog->kredit.datumVreme);
+	printf("\tIznos kredita: %d\n", slog->kredit.iznosKredita);
+	printf("\tIznos kamate: %d\n", slog->kredit.iznosKamate);
+	printf("\tBroj rata: %d\n", slog->kredit.brojRata);
+}
