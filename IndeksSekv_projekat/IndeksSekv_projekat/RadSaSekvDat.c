@@ -18,8 +18,10 @@ void FormirajSekvencijalnuDatoteku(const char* nazivSerijskeDat)
 		int i = 0;
 		for (; i < FAKTOR_BLOK_SERIJSKA; ++i)
 		{
-			if (blok.slogovi[i].status != STATUS_POSLEDNJI);
-				UnesiElement(&glavaListe, &blok.slogovi[i]);
+			if (blok.slogovi[i].status == STATUS_POSLEDNJI)
+				break;
+
+			UnesiElement(&glavaListe, &blok.slogovi[i]);
 		}
 	}
 
@@ -52,12 +54,13 @@ void UpisiElementeListeUSekvDat(Cvor* glavaListe)
 		if (i == FAKTOR_BLOKIRANJA_SEKV)
 		{
 			i = 0;
-			fwrite(&blok, FAKTOR_BLOKIRANJA_SEKV * sizeof(Slog), 1, sekvDat);
+			fwrite(&blok, sizeof(Slog), FAKTOR_BLOKIRANJA_SEKV, sekvDat);
 		}
 
 		tempGlava = tempGlava->sledeci;
 	}
 
+	// Ostatak bloka prepisi random slogovima, da nebi ostali stari slogovi iz prethodne iteracije
 	for (; i < FAKTOR_BLOKIRANJA_SEKV; ++i)
 	{
 		Slog randomSlog;

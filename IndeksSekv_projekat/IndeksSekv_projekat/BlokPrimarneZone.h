@@ -4,6 +4,7 @@
 #include "Slog.h"
 
 #define FAKTOR_BLOKIRANJA_PRIM_ZONA 5
+#define NEMA_PREKORACILACA			-1
 
 typedef struct
 {

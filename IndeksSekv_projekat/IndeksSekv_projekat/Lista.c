@@ -38,7 +38,7 @@ void UnesiElement(Cvor** glava , Slog* noviElement)
 	}
 
 	// Dodavanje na kraj
-	tempGlava = noviSlog;
+	tempGlava->sledeci = noviSlog;
 }
 
 
