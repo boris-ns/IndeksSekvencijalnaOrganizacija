@@ -1,3 +1,9 @@
+/////////////////////////////////////////////////
+// Indeks sekvencijalna organizacija datoteke  //
+// Autor: Boris Sulicenko                      //
+// Indeks: SW 4/2016                           //
+/////////////////////////////////////////////////
+
 #include <stdio.h>
 #include "RadSaDatotekom.h"
 #include "RadSaSerijskomDat.h"
@@ -14,6 +20,8 @@ void IspisiMeni()
 	printf("6) Formiraj primarnu zonu, zonu indeksa i zonu prekoracenja\n");
 	// ... ostalo sto fali
 	printf("8) Trazenje proizvoljnog sloga\n");
+	printf("9) Logicko brisanje sloga\n");
+	printf("11) Prikaz broja kredita odobrenih posle 2016. godine");
 	printf("12) Ispisi sve slogove\n");
 	printf("13) Izlaz iz programa\n");
 	printf("Odaberite: ");
@@ -29,9 +37,10 @@ void PrikaziNazivAktivneDatoteke(const char* naziv)
 
 void RukovanjeMenijem()
 {
-	int izbor = -1;
+	int izbor = -1, brojKredita;
 	FILE* aktivnaDatoteka = NULL;
 	char nazivDatoteke[FILENAME_MAX] = {'\0'};
+	char evidBroj[LEN_EVID_BROJ];
 
 	do
 	{
@@ -67,7 +76,21 @@ void RukovanjeMenijem()
 			break;
 
 		case 8:
-			PronadjiProizvoljanSlog();
+			printf("\nUnesite evidencioni broj: ");
+			scanf("%s", &evidBroj);
+			Slog* s = PronadjiProizvoljanSlog(evidBroj);
+			free(s);
+			break;
+
+		case 9:
+			printf("\nUnesite evidencioni broj: ");
+			scanf("%s", &evidBroj);
+			LogickoBrisanjeSloga(evidBroj);
+			break;
+
+		case 11:
+			brojKredita = BrojOdobrenihKreditaOd(2016);
+			printf("\nOdobreno je %d kredita nakon 01.01.2016.\n", brojKredita);
 			break;
 
 		case 12:

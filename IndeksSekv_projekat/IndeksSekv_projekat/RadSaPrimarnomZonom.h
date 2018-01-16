@@ -22,9 +22,15 @@ int IzracunajBrojCvorovaNaNivou(int brojBlokova, int visinaStabla, int nivo);
 void PostaviVrednostKljuca(CvorStabla* cvor, CvorStabla* cvorIzDat, int pozicija);
 void IspisiSveSlogove();
 void IspisiSlogoveIzZonePrekoracenja(long adresaPrvogPrek, long adresaBlokaPz);
-void PronadjiProizvoljanSlog();
+Slog* PronadjiProizvoljanSlog(char* evidBroj);
 long NadjiAdresuBlokaPrimarneZone(char* evidBroj);
-void PronadjiSlogUPrimarnojZoni(long adresaBlokaPz, char* evidBroj);
-void PronadjiSlogUZoniPrekoracenja(long adresa, long adresaBlokaPz, char* evidBroj);
+Slog* PronadjiSlogUPrimarnojZoni(long adresaBlokaPz, char* evidBroj);
+Slog* PronadjiSlogUZoniPrekoracenja(long adresa, long adresaBlokaPz, char* evidBroj);
+void LogickoBrisanjeSloga(char* evidBroj);
+void ObrisiSlogIzPrimZone(long adresaBlokaPz, char* evidBroj);
+void ObrisiSlogIzZonePrek(long adresa, char* evidBroj);
+int ProveriOdobrenjeKredita(Slog* slog, int godina);
+int BrojOdobrenihKreditaOd(int godina);
+int BrojOdobrenihKreditaIzZonePrekor(long adresaPrvogPrek, int godina);
 
 #endif //_RAD_SA_PRIMARNOM_ZONOM_H_
