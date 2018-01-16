@@ -36,7 +36,9 @@ int ProveriDaLiDatotekaPostoji(const char* nazivDatoteke)
 {
 	FILE* datoteka = fopen(nazivDatoteke, "rb");
 	int postojanje = (datoteka == NULL) ? 0 : 1;
-	fclose(datoteka);
+
+	if (datoteka != NULL)
+		fclose(datoteka);
 
 	return postojanje;
 }

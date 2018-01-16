@@ -249,3 +249,129 @@ void IspisiSlogoveIzZonePrekoracenja(long adresaPrvogPrek, long adresaBlokaPz)
 
 	fclose(prekoraciociDat);
 }
+
+void PronadjiProizvoljanSlog()
+{
+	if (!ProveriDaLiDatotekaPostoji("primarna_zona.dat") || !ProveriDaLiDatotekaPostoji("zona_indeksa.dat")
+		|| !ProveriDaLiDatotekaPostoji("prekoracioci.dat"))
+	{
+		printf("\nIndeks sekvencijalna datoteka nije formirana!\n");
+		return;
+	}
+
+	char evidBroj[LEN_EVID_BROJ];
+	printf("\nUnesite evidencioni broj: ");
+	scanf("%s", &evidBroj);
+
+	long adresaBlokaPz = NadjiAdresuBlokaPrimarneZone(evidBroj);
+	PronadjiSlogUPrimarnojZoni(adresaBlokaPz, evidBroj);
+}
+
+long NadjiAdresuBlokaPrimarneZone(char* evidBroj)
+{
+	FILE* zonaInd = fopen("zona_indeksa.dat", "rb");
+	fseek(zonaInd, 0 - sizeof(CvorStabla), SEEK_END); // Postavljanje na poslednji slog -> koren
+	long adresaBlokaPz = -1;
+
+	CvorStabla cvor;
+	while (fread(&cvor, sizeof(CvorStabla), 1, zonaInd))
+	{
+		// Dosli smo do lista, treba naci adresu bloka iz primarne zone
+		if (cvor.status == STATUS_CVOR_JE_LIST)
+		{
+			int i = 0;
+			for (; i < FAKTOR_BLOKIRANJA_STABLA; ++i)
+			{
+				if (strcmp(evidBroj, cvor.slogovi[i].evidencioniBroj) <= 0)
+				{
+					adresaBlokaPz = cvor.slogovi[i].relAdr;
+					fclose(zonaInd);
+					return adresaBlokaPz;
+				}
+			}
+		}
+
+		// Nalazenje sledeceg cvora
+		int i = 0;
+		for (; i < FAKTOR_BLOKIRANJA_STABLA; ++i)
+		{
+			if (strcmp(evidBroj, cvor.slogovi[i].evidencioniBroj) <= 0)
+			{
+				fseek(zonaInd, cvor.slogovi[i].relAdr, SEEK_SET);
+				break;
+			}
+		}
+	}
+
+	fclose(zonaInd);
+
+	return -1;
+}
+
+void PronadjiSlogUPrimarnojZoni(long adresaBlokaPz, char* evidBroj)
+{
+	FILE* primZona = fopen("primarna_zona.dat", "rb");
+	fseek(primZona, adresaBlokaPz * sizeof(BlokPrimarneZone), SEEK_SET);
+
+	BlokPrimarneZone blok;
+	fread(&blok, sizeof(BlokPrimarneZone), 1, primZona);
+
+	long adresaBloka = -1;
+	int i = 0, flag = 0;
+	for (; i < FAKTOR_BLOKIRANJA_PRIM_ZONA; ++i)
+	{
+		if (strcmp(evidBroj, blok.slogovi[i].kredit.evidencioniBroj) == 0)
+		{
+			if (blok.slogovi[i].status == STATUS_NEAKTIVAN)
+			{
+				printf("\nSlog je obrisan!\n");
+				break;
+			}
+
+			IspisiSlog(&blok.slogovi[i]);
+			printf("\tRedni broj sloga u bloku: %d\n", i + 1);
+			adresaBloka = adresaBlokaPz * sizeof(BlokPrimarneZone);
+			printf("\tAdresa bloka u primarnoj zoni: %ld\n", adresaBloka);
+
+			flag = 1;
+			break;
+		}
+	}
+
+	if (!flag) // ako nije pronasao slog u prim zoni, trazi u zoni prekoracenja
+		PronadjiSlogUZoniPrekoracenja(blok.prviZonaPr, adresaBloka, evidBroj);
+	
+	fclose(primZona);
+}
+
+void PronadjiSlogUZoniPrekoracenja(long adresa, long adresaBlokaPz, char* evidBroj)
+{
+	FILE* zonaPrek = fopen("prekoracioci.dat", "rb");
+	fseek(zonaPrek, adresa, SEEK_SET);
+
+	SlogPrekoracioc slog;
+	int brojacSlogova = 0;
+
+	while (fread(&slog, sizeof(SlogPrekoracioc), 1, zonaPrek))
+	{
+		++brojacSlogova;
+		
+		if (strcmp(evidBroj, slog.slog.kredit.evidencioniBroj) == 0)
+		{
+			if (slog.slog.status == STATUS_NEAKTIVAN)
+			{
+				printf("\nSlog je obrisan!\n");
+				break;
+			}
+
+			IspisiSlog(&slog.slog);
+			printf("\tRedni broj sloga u listi prekoracilaca: %d\n", brojacSlogova);
+			printf("\tAdresa bloka u primarnoj zoni: %ld\n", adresaBlokaPz);
+			break;
+		}
+
+		fseek(zonaPrek, slog.sledeci, SEEK_SET);
+	}
+
+	fclose(zonaPrek);
+}
