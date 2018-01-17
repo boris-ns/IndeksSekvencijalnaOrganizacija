@@ -266,6 +266,9 @@ Slog* PronadjiProizvoljanSlog(char* evidBroj)
 	long adresaBlokaPz = NadjiAdresuBlokaPrimarneZone(evidBroj);
 	Slog* pronadjeniSlog = PronadjiSlogUPrimarnojZoni(adresaBlokaPz, evidBroj);
 	
+	if (pronadjeniSlog == NULL)
+		printf("\nSlog se ne nalazi u datoteci!\n");
+
 	return pronadjeniSlog;
 }
 
@@ -322,7 +325,7 @@ Slog* PronadjiSlogUPrimarnojZoni(long adresaBlokaPz, char* evidBroj)
 	int i = 0, flag = 0;
 	for (; i < FAKTOR_BLOKIRANJA_PRIM_ZONA; ++i)
 	{
-		if (blok.slogovi[i].status != STATUS_POSLEDNJI)
+		if (blok.slogovi[i].status == STATUS_POSLEDNJI)
 			break;
 
 		if (strcmp(evidBroj, blok.slogovi[i].kredit.evidencioniBroj) == 0)
@@ -417,7 +420,7 @@ void ObrisiSlogIzPrimZone(long adresaBlokaPz, char* evidBroj)
 	int i = 0, flag = 0;
 	for (; i < FAKTOR_BLOKIRANJA_PRIM_ZONA; ++i)
 	{
-		if (blok.slogovi[i].status != STATUS_POSLEDNJI)
+		if (blok.slogovi[i].status == STATUS_POSLEDNJI)
 			break;
 
 		if (strcmp(evidBroj, blok.slogovi[i].kredit.evidencioniBroj) == 0)
@@ -557,3 +560,100 @@ int BrojOdobrenihKreditaIzZonePrekor(long adresaPrvogPrek, int godina)
 	return brojac;
 }
 
+/* (7) Upis novog sloga u IS datoteku */
+
+void UnesiNoviSlogUISDatoteku()
+{
+	if (!ProveriDaLiDatotekaPostoji("primarna_zona.dat") || !ProveriDaLiDatotekaPostoji("zona_indeksa.dat")
+		|| !ProveriDaLiDatotekaPostoji("prekoracioci.dat"))
+	{
+		printf("\nIndeks sekvencijalna datoteka nije formirana!\n");
+		return;
+	}
+
+	Slog noviSlog;
+	UnesiSlog(&noviSlog);
+
+	long adresaBlokaPz = NadjiAdresuBlokaPrimarneZone(noviSlog.kredit.evidencioniBroj);
+	Slog* pronadjeniSlog = PronadjiSlogUPrimarnojZoni(adresaBlokaPz, noviSlog.kredit.evidencioniBroj);
+
+	if (pronadjeniSlog != NULL)
+	{
+		printf("\nSlog vec postoji u datoteci. Ne mozete uneti novi!\n");
+		free(pronadjeniSlog);
+		return;
+	}
+
+	UpisiSlogUDatoteku(&noviSlog, adresaBlokaPz);
+}
+
+// Odlucivanje i upisivanje sloga u primarnu zonu ili zonu prekoracenja
+void UpisiSlogUDatoteku(Slog* noviSlog, long adresaBlokaPz)
+{
+	FILE* primZona = fopen("primarna_zona.dat", "r+b");
+	fseek(primZona, adresaBlokaPz * sizeof(BlokPrimarneZone), SEEK_SET);
+
+	BlokPrimarneZone blok;
+	fread(&blok, sizeof(BlokPrimarneZone), 1, primZona);
+
+	// Ako je kljuc novog sloga veci od poslednjeg odma ga stavi u zonu prekoracenja
+	// If postoji da nebi morali da prolazimo kroz blok bez potrebe
+	if (strcmp(noviSlog->kredit.evidencioniBroj, blok.slogovi[FAKTOR_BLOKIRANJA_PRIM_ZONA - 1].kredit.evidencioniBroj) > 0)
+	{
+		// Provera da li ima mesta u zoni prekoracenja ?
+		long adresaNovogPrek = UpisiSlogUZonuPrekoracenja(noviSlog, blok.prviZonaPr);
+		blok.prviZonaPr = adresaNovogPrek;
+	}
+	else
+	{
+		// Nalazenje indeksa bloka gde bi novi slog trebao da se upise
+		int i = 0, pozicija;
+		for (; i < FAKTOR_BLOKIRANJA_PRIM_ZONA; ++i)
+		{
+			if (strcmp(noviSlog->kredit.evidencioniBroj, blok.slogovi[i].kredit.evidencioniBroj) < 0)
+			{
+				pozicija = i;
+				break;
+			}
+		}
+
+		// Pomeranje slogova u desno od pozicije koja je pronadjena prethodnim for-om
+		Slog slog1, slog2;
+		memcpy(&slog1, noviSlog, sizeof(Slog));
+
+		// U slog1 ce ostati slog koji treba da se upise u zonu prekoracenja
+		for (; pozicija < FAKTOR_BLOKIRANJA_PRIM_ZONA; ++pozicija)
+		{
+			memcpy(&slog2, &blok.slogovi[pozicija], sizeof(Slog));
+			memcpy(&blok.slogovi[pozicija], &slog1, sizeof(Slog));
+			memcpy(&slog1, &slog2, sizeof(Slog));
+		}
+
+		long adresaNovogPrek = UpisiSlogUZonuPrekoracenja(&slog1, blok.prviZonaPr);
+		blok.prviZonaPr = adresaNovogPrek;
+
+		// Da li treba formirati novo stablo?!
+		// imamo novi slog na poslednjem mestu kao max
+	}
+
+	fclose(primZona);
+}
+
+// Vraca adresu novog prvog prekoracioca u datoteci zone prekoracenja
+long UpisiSlogUZonuPrekoracenja(Slog* slog, long adresaPrvogPrek)
+{
+	FILE* zonaPrek = fopen("prekoracioci.dat", "r+b");
+
+	SlogPrekoracioc slogPrek;
+	memcpy(&slogPrek.slog, slog, sizeof(Slog));
+	slogPrek.sledeci = adresaPrvogPrek;
+
+	fseek(zonaPrek, 0, SEEK_END);
+	fwrite(&slogPrek, sizeof(SlogPrekoracioc), 1, zonaPrek);
+
+	// Nalazenje nove adrese (novi prekoracioc se upisuje na kraj datoteke)
+	long novaAdresa = ftell(zonaPrek) - sizeof(SlogPrekoracioc);
+	fclose(zonaPrek);
+	
+	return novaAdresa;
+}

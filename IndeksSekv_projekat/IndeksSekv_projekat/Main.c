@@ -18,7 +18,7 @@ void IspisiMeni()
 	printf("4) Formiranje serijske datoteke sa unosom podataka\n");
 	printf("5) Formiraj sekvencijalnu datoteku na osnovu serijske\n");
 	printf("6) Formiraj primarnu zonu, zonu indeksa i zonu prekoracenja\n");
-	// ... ostalo sto fali
+	printf("7) Upis novog sloga\n");
 	printf("8) Trazenje proizvoljnog sloga\n");
 	printf("9) Logicko brisanje sloga\n");
 	printf("11) Prikaz broja kredita odobrenih posle 2016. godine\n");
@@ -73,6 +73,10 @@ void RukovanjeMenijem()
 
 		case 6:
 			FormirajIndeksSekvencijalnuDat();
+			break;
+
+		case 7:
+			UnesiNoviSlogUISDatoteku();
 			break;
 
 		case 8:
