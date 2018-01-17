@@ -13,6 +13,7 @@
 
 // (6) Formiranje IS datoteke (primarna zona, zona indeksa, zona prekoracenja)
 void FormirajIndeksSekvencijalnuDat();
+void FormirajStabloOdPrimarneZone(FILE* primZona);
 void PripremiBlokZaUpisUPrimZonu(FILE* datPrimarnaZona, BlokPrimarneZone* blokPz, Slog blokSekv[]);
 void PripremiCvorStablaZaUpis(CvorStabla* cvor, BlokPrimarneZone* blokPz, int indeksSloga, int adresaBloka);
 void NadjiNajveciKljucUBloku(BlokPrimarneZone* blok, SlogStabla* slogStabla);

@@ -56,6 +56,43 @@ void FormirajIndeksSekvencijalnuDat()
 	FormirajOstatakStabla(adresaBloka); // adresaBloka je i brojac koliko ima blokova u primarnoj zoni
 }
 
+// Formiranje novog stabla od slogova iz primarne zone
+// nepotrebno zasad
+void FormirajStabloOdPrimarneZone(FILE* primZona)
+{
+	FILE* zonaInd = fopen("zona_indeksa.dat", "wb");
+
+	BlokPrimarneZone blokPz;
+	int adresaBloka = 0;
+	int j = 0;
+	CvorStabla cvor;
+	InitCvorStabla(&cvor);
+
+	fseek(primZona, 0, SEEK_SET);
+	while (fread(&blokPz, sizeof(BlokPrimarneZone), 1, primZona))
+	{
+		// Kreiranje listova stabla
+		if (j == 3) // Popunili su se slogovi unutar cvora, pa treba formirati novi cvor
+		{
+			j = 0;
+			fwrite(&cvor, sizeof(CvorStabla), 1, zonaInd);
+			InitCvorStabla(&cvor);
+		}
+
+		PripremiCvorStablaZaUpis(&cvor, &blokPz, j, adresaBloka);
+		j++;
+		adresaBloka++;
+	}
+
+	// Upis poslednjeg cvora koji je kreiran
+	fwrite(&cvor, sizeof(CvorStabla), 1, zonaInd);
+
+	// Poslednji slog u poslednjem listu treba da ima max vrednost kljuca
+	PodesiPoslednjiList(zonaInd); // TODO mozda ovo i ne treba jer sam u trazenju maxa stavio da ako je slog satus_poslednji da stavi max vrednost "zzzzzz"
+
+	FormirajOstatakStabla(adresaBloka); // adresaBloka je i brojac koliko ima blokova u primarnoj zoni
+}
+
 void PripremiBlokZaUpisUPrimZonu(FILE* datPrimarnaZona, BlokPrimarneZone* blokPz, Slog blokSekv[])
 {	
 	int i = 0;
@@ -222,8 +259,6 @@ void IspisiSveSlogove()
 	}
 }
 
-
-// @TODO TESTIRATI OVO
 //									      adresaPrvogPrekoracioca
 void IspisiSlogoveIzZonePrekoracenja(long adresaPrvogPrek, long adresaBlokaPz)
 {
@@ -604,7 +639,7 @@ void UpisiSlogUDatoteku(Slog* noviSlog, long adresaBlokaPz)
 		long adresaNovogPrek = UpisiSlogUZonuPrekoracenja(noviSlog, blok.prviZonaPr);
 		blok.prviZonaPr = adresaNovogPrek;
 	}
-	else
+	else // novi slog se upisuje u blok primarne zone
 	{
 		// Nalazenje indeksa bloka gde bi novi slog trebao da se upise
 		int i = 0, pozicija;
@@ -631,9 +666,9 @@ void UpisiSlogUDatoteku(Slog* noviSlog, long adresaBlokaPz)
 
 		long adresaNovogPrek = UpisiSlogUZonuPrekoracenja(&slog1, blok.prviZonaPr);
 		blok.prviZonaPr = adresaNovogPrek;
-
-		// Da li treba formirati novo stablo?!
-		// imamo novi slog na poslednjem mestu kao max
+		
+		fseek(primZona, 0 - sizeof(BlokPrimarneZone), SEEK_CUR);
+		fwrite(&blok, sizeof(BlokPrimarneZone), 1, primZona);
 	}
 
 	fclose(primZona);
