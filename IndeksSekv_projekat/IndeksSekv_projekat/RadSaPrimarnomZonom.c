@@ -260,7 +260,7 @@ Slog* PronadjiProizvoljanSlog(char* evidBroj)
 		|| !ProveriDaLiDatotekaPostoji("prekoracioci.dat"))
 	{
 		printf("\nIndeks sekvencijalna datoteka nije formirana!\n");
-		return;
+		return NULL;
 	}
 
 	long adresaBlokaPz = NadjiAdresuBlokaPrimarneZone(evidBroj);
@@ -491,8 +491,12 @@ void ObrisiSlogIzZonePrek(long adresa, char* evidBroj)
 
 int ProveriOdobrenjeKredita(Slog* slog, int godina)
 {
-	// STRTOL puca
-	long godinaIzDatuma = strtol(slog->kredit.datumVreme[6], &slog->kredit.datumVreme[9], 10);
+	char strGodina[5];
+	char* temp;
+	strncpy(strGodina, &slog->kredit.datumVreme[6], 5);
+	strGodina[4] = '\0';
+
+	long godinaIzDatuma = strtol(strGodina, &temp, 10);
 
 	if (godinaIzDatuma == 0)
 		return 0;
@@ -523,6 +527,8 @@ int BrojOdobrenihKreditaOd(int godina)
 	}
 
 	fclose(primZona);
+
+	return brojac;
 }
 
 int BrojOdobrenihKreditaIzZonePrekor(long adresaPrvogPrek, int godina)
@@ -547,5 +553,7 @@ int BrojOdobrenihKreditaIzZonePrekor(long adresaPrvogPrek, int godina)
 	}
 
 	fclose(prekoraciociDat);
+
+	return brojac;
 }
 

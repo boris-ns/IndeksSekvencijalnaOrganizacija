@@ -21,7 +21,7 @@ void IspisiMeni()
 	// ... ostalo sto fali
 	printf("8) Trazenje proizvoljnog sloga\n");
 	printf("9) Logicko brisanje sloga\n");
-	printf("11) Prikaz broja kredita odobrenih posle 2016. godine");
+	printf("11) Prikaz broja kredita odobrenih posle 2016. godine\n");
 	printf("12) Ispisi sve slogove\n");
 	printf("13) Izlaz iz programa\n");
 	printf("Odaberite: ");
