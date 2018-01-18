@@ -10,6 +10,7 @@
 #include "CvorStabla.h"
 #include "SlogPrekoracioc.h"
 #include "RadSaDatotekom.h"
+#include "BlokSerijska.h"
 
 // (6) Formiranje IS datoteke (primarna zona, zona indeksa, zona prekoracenja)
 void FormirajIndeksSekvencijalnuDat();
@@ -40,7 +41,10 @@ void ObrisiSlogIzPrimZone(long adresaBlokaPz, char* evidBroj);
 void ObrisiSlogIzZonePrek(long adresa, char* evidBroj);
 
 // (10) Reorganizacija IS datoteke
-// @ TODO
+void ReorganizujDatoteku();
+void PopuniSerijskuDatoteku(const char* serijskaNaziv);
+void UpisiSlogoveIzZonePrekUSerijsku(long adresaPrvogPrek, int* popunjenost, FILE* zonaPrek, FILE* serijskaDat);
+void PodesiPoslednjiSlogSerijske(FILE* serijskaDat);
 
 // (11) Prikaz odobrenih kredita posle 2016. godine
 int ProveriOdobrenjeKredita(Slog* slog, int godina);

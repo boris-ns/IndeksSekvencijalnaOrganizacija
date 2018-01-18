@@ -419,7 +419,7 @@ Slog* PronadjiSlogUZoniPrekoracenja(long adresa, long adresaBlokaPz, char* evidB
 			return pronadjenSlog; // Slog je pronadjen
 		}
 
-		if (slog.sledeci != NEMA_PREKORACILACA)
+		if (slog.sledeci != POSLEDNJI_PREKORACIOC)
 			fseek(zonaPrek, slog.sledeci, SEEK_SET);
 	}
 
@@ -515,7 +515,7 @@ void ObrisiSlogIzZonePrek(long adresa, char* evidBroj)
 			break;
 		}
 
-		if (slog.sledeci != NEMA_PREKORACILACA)
+		if (slog.sledeci != POSLEDNJI_PREKORACIOC)
 			fseek(zonaPrek, slog.sledeci, SEEK_SET);
 	}
 
@@ -586,7 +586,7 @@ int BrojOdobrenihKreditaIzZonePrekor(long adresaPrvogPrek, int godina)
 
 		fseek(prekoraciociDat, slog.sledeci, SEEK_SET);
 
-		if (slog.sledeci == NEMA_PREKORACILACA)
+		if (slog.sledeci == POSLEDNJI_PREKORACIOC)
 			break;
 	}
 
@@ -691,4 +691,122 @@ long UpisiSlogUZonuPrekoracenja(Slog* slog, long adresaPrvogPrek)
 	fclose(zonaPrek);
 	
 	return novaAdresa;
+}
+
+/* (10) Reorganizacija IS datoteke */
+void ReorganizujDatoteku()
+{
+	if (!ProveriDaLiDatotekaPostoji("primarna_zona.dat") || !ProveriDaLiDatotekaPostoji("zona_indeksa.dat")
+		|| !ProveriDaLiDatotekaPostoji("prekoracioci.dat"))
+	{
+		printf("\nIndeks sekvencijalna datoteka nije formirana!\n");
+		return;
+	}
+
+	const char nazivPomocneDat[FILENAME_MAX] = "serijska_pomocna.dat";
+	PopuniSerijskuDatoteku(nazivPomocneDat);
+	FormirajSekvencijalnuDatoteku(nazivPomocneDat);
+	FormirajIndeksSekvencijalnuDat();
+
+	printf("\nReorganizacija je uspesno obavljena!\n");
+}
+
+void PopuniSerijskuDatoteku(const char* serijskaNaziv)
+{
+	FILE* primZona = fopen("primarna_zona.dat", "rb");
+	FILE* zonaPrek = fopen("prekoracioci.dat", "rb");
+	FILE* serijskaDat = fopen(serijskaNaziv, "wb");
+
+	BlokPrimarneZone blokPz;
+	BlokSerijska blokSerijska;
+	int popunjenost = 0;
+
+	while (fread(&blokPz, sizeof(BlokPrimarneZone), 1, primZona))
+	{
+
+		int i = 0;
+		for (; i < FAKTOR_BLOKIRANJA_PRIM_ZONA; ++i)
+		{
+			if (blokPz.slogovi[i].status == STATUS_NEAKTIVAN)
+				continue;
+
+			memcpy(&blokSerijska.slogovi[popunjenost], &blokPz.slogovi[i], sizeof(Slog));
+			++popunjenost;
+
+			if (popunjenost == FAKTOR_BLOK_SERIJSKA)
+			{
+				popunjenost = 0;
+				fwrite(&blokSerijska, sizeof(BlokSerijska), 1, serijskaDat);
+			}
+		}
+
+		if (blokPz.prviZonaPr != NEMA_PREKORACILACA)
+			UpisiSlogoveIzZonePrekUSerijsku(&blokSerijska, blokPz.prviZonaPr, &popunjenost, zonaPrek, serijskaDat);
+	
+		if (popunjenost != 0 && popunjenost != FAKTOR_BLOK_SERIJSKA)
+		{
+			popunjenost = 0;
+			fwrite(&blokSerijska, sizeof(BlokSerijska), 1, serijskaDat);
+		}
+	}
+
+	PodesiPoslednjiSlogSerijske(serijskaDat);
+
+	fclose(serijskaDat);
+	fclose(zonaPrek);
+	fclose(primZona);
+}
+
+void UpisiSlogoveIzZonePrekUSerijsku(BlokSerijska* blokSerijska, long adresaPrvogPrek, int* popunjenost, FILE* zonaPrek, FILE* serijskaDat)
+{
+	SlogPrekoracioc slogPrek;
+
+	fseek(zonaPrek, adresaPrvogPrek, SEEK_SET);
+	while (fread(&slogPrek, sizeof(SlogPrekoracioc), 1, zonaPrek))
+	{
+		if (slogPrek.slog.status == STATUS_NEAKTIVAN)
+			continue;
+
+		memcpy(&blokSerijska->slogovi[*popunjenost], &slogPrek.slog, sizeof(Slog));
+		++(*popunjenost);
+
+		if (*popunjenost == FAKTOR_BLOK_SERIJSKA)
+		{
+			*popunjenost = 0;
+			fwrite(blokSerijska, sizeof(BlokSerijska), 1, serijskaDat);
+		}
+
+		if (slogPrek.sledeci != POSLEDNJI_PREKORACIOC)
+			fseek(zonaPrek, slogPrek.sledeci, SEEK_SET);
+		else
+			break;
+	}
+}
+
+void PodesiPoslednjiSlogSerijske(FILE* serijskaDat)
+{
+	fseek(serijskaDat, 0 - sizeof(BlokSerijska), SEEK_END);
+
+	Slog poslednjiSlog; 
+	poslednjiSlog.status = STATUS_POSLEDNJI;
+	
+	BlokSerijska blok;
+	fread(&blok, sizeof(BlokSerijska), 1, serijskaDat);
+
+	int i = 0;
+	for (; i < FAKTOR_BLOK_SERIJSKA; ++i)
+	{
+		if (blok.slogovi[i].status != STATUS_AKTIVAN)
+		{
+			memcpy(&blok.slogovi[i], &poslednjiSlog, sizeof(Slog));
+			fseek(serijskaDat, 0 - sizeof(BlokSerijska), SEEK_END);
+			fwrite(&blok, sizeof(BlokSerijska), 1, serijskaDat);
+			return;
+		}
+	}
+
+	// Treba kreirati novi blok
+	BlokSerijska noviBlok;
+	noviBlok.slogovi[0].status = STATUS_POSLEDNJI;
+	fwrite(&noviBlok, sizeof(BlokSerijska), 1, serijskaDat);
 }

@@ -16,13 +16,14 @@ void IspisiMeni()
 	printf("2) Izobr aktivne datoteke\n");
 	printf("3) Prikaz naziva aktivne datoteke\n");
 	printf("4) Formiranje serijske datoteke sa unosom podataka\n");
-	printf("5) Formiraj sekvencijalnu datoteku na osnovu serijske\n");
-	printf("6) Formiraj primarnu zonu, zonu indeksa i zonu prekoracenja\n");
+	printf("5) Formiranje sekvencijalne datoteke na osnovu serijske\n");
+	printf("6) Formiranje primarne zone, zone indeksa i zone prekoracenja\n");
 	printf("7) Upis novog sloga\n");
 	printf("8) Trazenje proizvoljnog sloga\n");
 	printf("9) Logicko brisanje sloga\n");
+	printf("10) Reorganizacija datoteke\n");
 	printf("11) Prikaz broja kredita odobrenih posle 2016. godine\n");
-	printf("12) Ispisi sve slogove\n");
+	printf("12) Ispis svih slogova\n");
 	printf("13) Izlaz iz programa\n");
 	printf("Odaberite: ");
 }
@@ -90,6 +91,10 @@ void RukovanjeMenijem()
 			printf("\nUnesite evidencioni broj: ");
 			scanf("%s", &evidBroj);
 			LogickoBrisanjeSloga(evidBroj);
+			break;
+
+		case 10:
+			ReorganizujDatoteku();
 			break;
 
 		case 11:
