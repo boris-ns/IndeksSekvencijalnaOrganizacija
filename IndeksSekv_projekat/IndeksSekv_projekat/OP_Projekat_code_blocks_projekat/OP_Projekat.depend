@@ -1,0 +1,92 @@
+# depslib dependency file v1.0
+1515792083 source:c:\users\boris\desktop\op_projekat\cvorstabla.c
+	"CvorStabla.h"
+
+1515957216 c:\users\boris\desktop\op_projekat\cvorstabla.h
+	"Kredit.h"
+
+1516362725 c:\users\boris\desktop\op_projekat\kredit.h
+
+1515860349 source:c:\users\boris\desktop\op_projekat\lista.c
+	"Lista.h"
+
+1515327577 c:\users\boris\desktop\op_projekat\lista.h
+	<stdlib.h>
+	<string.h>
+	"Slog.h"
+
+1515963385 c:\users\boris\desktop\op_projekat\slog.h
+	<stdio.h>
+	"Kredit.h"
+
+1516383847 source:c:\users\boris\desktop\op_projekat\main.c
+	<stdio.h>
+	"RadSaDatotekom.h"
+	"RadSaSerijskomDat.h"
+	"RadSaSekvDat.h"
+	"RadSaISDatotekom.h"
+
+1515965232 c:\users\boris\desktop\op_projekat\radsadatotekom.h
+	<stdio.h>
+
+1515160306 c:\users\boris\desktop\op_projekat\radsaserijskomdat.h
+	<stdio.h>
+	<string.h>
+	"BlokSerijska.h"
+
+1515157261 c:\users\boris\desktop\op_projekat\blokserijska.h
+	"Slog.h"
+
+1515617908 c:\users\boris\desktop\op_projekat\radsasekvdat.h
+	<stdio.h>
+	"Lista.h"
+	"BlokSerijska.h"
+
+1516367289 c:\users\boris\desktop\op_projekat\radsaprimarnomzonom.h
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<math.h>
+	"BlokPrimarneZone.h"
+	"RadSaSekvDat.h"
+	"CvorStabla.h"
+	"SlogPrekoracioc.h"
+	"RadSaDatotekom.h"
+	"BlokSerijska.h"
+
+1516205949 c:\users\boris\desktop\op_projekat\blokprimarnezone.h
+	"Slog.h"
+
+1515966526 c:\users\boris\desktop\op_projekat\slogprekoracioc.h
+	"Slog.h"
+
+1516101093 source:c:\users\boris\desktop\op_projekat\radsadatotekom.c
+	"RadSaDatotekom.h"
+
+1516382185 source:c:\users\boris\desktop\op_projekat\radsaprimarnomzonom.c
+	"RadSaPrimarnomZonom.h"
+
+1516301047 source:c:\users\boris\desktop\op_projekat\radsasekvdat.c
+	"RadSaSekvDat.h"
+
+1515165124 source:c:\users\boris\desktop\op_projekat\radsaserijskomdat.c
+	"RadSaSerijskomDat.h"
+
+1516362746 source:c:\users\boris\desktop\op_projekat\slog.c
+	"Slog.h"
+
+1516383830 source:c:\users\boris\desktop\op_projekat\radsaisdatotekom.c
+	"RadSaISDatotekom.h"
+
+1516367289 c:\users\boris\desktop\op_projekat\radsaisdatotekom.h
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<math.h>
+	"BlokPrimarneZone.h"
+	"RadSaSekvDat.h"
+	"CvorStabla.h"
+	"SlogPrekoracioc.h"
+	"RadSaDatotekom.h"
+	"BlokSerijska.h"
+

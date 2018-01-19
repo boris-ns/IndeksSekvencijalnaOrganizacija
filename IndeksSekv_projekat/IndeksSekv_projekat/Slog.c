@@ -18,7 +18,7 @@ void UnesiSlog(Slog* slog)
 	do
 	{
 		printf("Unesite iznos kamate: ");
-		scanf("%d", &slog->kredit.iznosKamate);
+		scanf("%f", &slog->kredit.iznosKamate);
 	} while (slog->kredit.iznosKamate < 1 || slog->kredit.iznosKamate> MAX_IZNOS_KAMATE);
 
 	do
@@ -36,6 +36,6 @@ void IspisiSlog(Slog* slog)
 	printf("\tIme i prezime: %s\n", slog->kredit.imePrezime);
 	printf("\tDatum i vreme odobrenja: %s\n", slog->kredit.datumVreme);
 	printf("\tIznos kredita: %d\n", slog->kredit.iznosKredita);
-	printf("\tIznos kamate: %d\n", slog->kredit.iznosKamate);
+	printf("\tIznos kamate: %.2f\n", slog->kredit.iznosKamate);
 	printf("\tBroj rata: %d\n", slog->kredit.brojRata);
 }

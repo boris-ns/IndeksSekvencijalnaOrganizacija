@@ -14,4 +14,65 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RadSaDatotekom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RadSaSerijskomDat.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Slog.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lista.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RadSaSekvDat.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RadSaPrimarnomZonom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CvorStabla.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Kredit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RadSaDatotekom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RadSaSerijskomDat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Slog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BlokSerijska.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lista.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RadSaSekvDat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BlokPrimarneZone.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RadSaPrimarnomZonom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CvorStabla.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SlogPrekoracioc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

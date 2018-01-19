@@ -26,6 +26,7 @@ void PostaviVrednostKljuca(CvorStabla* cvor, CvorStabla* cvorIzDat, int pozicija
 
 // (7) Upisivanje novog sloga u IS datoteku
 void UnesiNoviSlogUISDatoteku();
+int DaLiImaMestaUZoniPrekoracenja(FILE* primZona);
 void UpisiSlogUDatoteku(Slog* noviSlog, long adresaBlokaPz);
 long UpisiSlogUZonuPrekoracenja(Slog* slog, long adresaPrvogPrek);
 
@@ -43,7 +44,7 @@ void ObrisiSlogIzZonePrek(long adresa, char* evidBroj);
 // (10) Reorganizacija IS datoteke
 void ReorganizujDatoteku();
 void PopuniSerijskuDatoteku(const char* serijskaNaziv);
-void UpisiSlogoveIzZonePrekUSerijsku(long adresaPrvogPrek, int* popunjenost, FILE* zonaPrek, FILE* serijskaDat);
+void UpisiSlogoveIzZonePrekUSerijsku(BlokSerijska* blokSerijska, long adresaPrvogPrek, int* popunjenost, FILE* zonaPrek, FILE* serijskaDat);
 void PodesiPoslednjiSlogSerijske(FILE* serijskaDat);
 
 // (11) Prikaz odobrenih kredita posle 2016. godine

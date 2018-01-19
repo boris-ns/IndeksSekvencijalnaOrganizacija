@@ -15,7 +15,7 @@ typedef struct
 	char imePrezime[LEN_IME_PREZ];
 	char datumVreme[LEN_DATUM];
 	int iznosKredita;
-	int iznosKamate;
+	float iznosKamate;
 	int brojRata;
 } Kredit;
 

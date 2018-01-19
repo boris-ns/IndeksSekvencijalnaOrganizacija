@@ -74,6 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -90,6 +91,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -110,6 +112,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CvorStabla.c" />
+    <ClCompile Include="Lista.c" />
+    <ClCompile Include="Main.c" />
+    <ClCompile Include="RadSaDatotekom.c" />
+    <ClCompile Include="RadSaPrimarnomZonom.c" />
+    <ClCompile Include="RadSaSekvDat.c" />
+    <ClCompile Include="RadSaSerijskomDat.c" />
+    <ClCompile Include="Slog.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BlokPrimarneZone.h" />
+    <ClInclude Include="BlokSerijska.h" />
+    <ClInclude Include="CvorStabla.h" />
+    <ClInclude Include="Kredit.h" />
+    <ClInclude Include="Lista.h" />
+    <ClInclude Include="RadSaDatotekom.h" />
+    <ClInclude Include="RadSaPrimarnomZonom.h" />
+    <ClInclude Include="RadSaSekvDat.h" />
+    <ClInclude Include="RadSaSerijskomDat.h" />
+    <ClInclude Include="Slog.h" />
+    <ClInclude Include="SlogPrekoracioc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
